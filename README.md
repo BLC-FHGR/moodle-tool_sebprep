@@ -11,7 +11,7 @@ A Moodle admin tool that automates preparation of module courses for Safe Exam B
 
 ## Installation
 
-1. Copy the plugin folder into `admin/tool/sebprep/`.
+1. Copy the plugin folder into `public/admin/tool/sebprep/` (Moodle 5.1+ with `public/` web root).
 2. Run the Moodle upgrade (`/admin/index.php`).
 3. The tool appears under **Site administration → Tools → SEB Preparation Setup**.
 
