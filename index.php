@@ -25,6 +25,7 @@ if (optional_param('clearsession', 0, PARAM_INT)) {
     unset($SESSION->sebprep_frist_probe);
     unset($SESSION->sebprep_frist_ersatz);
     unset($SESSION->sebprep_language);
+    unset($SESSION->sebprep_warnings);
     redirect(new moodle_url('/admin/tool/sebprep/index.php'));
 }
 
