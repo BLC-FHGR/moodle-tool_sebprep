@@ -38,7 +38,8 @@ $string['col_warning']              = 'Hinweis';
 $string['status_ready']             = '✓ Bereit';
 $string['status_invalid']           = '✗ URL ungültig / Kurs nicht gefunden';
 $string['status_done']              = '✅ Erledigt';
-$string['status_skipped']           = '⚠️ Fehler';
+$string['status_skipped']           = '⏭ Übersprungen';
+$string['status_error']             = '❌ Fehler';
 
 $string['warn_existing_subcourse']  = '⚠️ Bestehender Subcourse-Link gefunden (refcourse={$a}) – bitte manuell prüfen';
 $string['warn_subcourse_exists']    = '⚠️ Subcourse-Link für {$a} existiert bereits im Kurs – übersprungen';

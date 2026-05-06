@@ -101,7 +101,7 @@ if ($action === 'execute' && confirm_sesskey()) {
                 'url'      => $entry['url'],
                 'courseid' => $entry['courseid'],
                 'name'     => $entry['course']->fullname ?? '–',
-                'status'   => get_string('status_skipped', 'tool_sebprep'),
+                'status'   => get_string('status_error', 'tool_sebprep'),
                 'warning'  => $e->getMessage()
                     . ' | ' . basename($e->getFile()) . ':' . $e->getLine()
                     . ' | ' . str_replace("\n", ' ← ', substr($e->getTraceAsString(), 0, 400)),
