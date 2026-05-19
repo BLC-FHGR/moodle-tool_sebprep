@@ -377,19 +377,36 @@ function tool_sebprep_copy_module(
     string $fristprobe = '',
     string $fristersatz = ''
 ): void {
+    $cmid = null;
     switch ($mod['modname']) {
         case 'resource':
-            tool_sebprep_copy_resource($targetcourseid, $targetsectionid, $templatecourseid, $mod);
+            $cmid = tool_sebprep_copy_resource($targetcourseid, $targetsectionid, $templatecourseid, $mod);
             break;
         case 'subcourse':
-            tool_sebprep_copy_subcourse($targetcourseid, $targetsectionid, $mod, $idnumber, $fristprobe, $fristersatz);
+            $cmid = tool_sebprep_copy_subcourse($targetcourseid, $targetsectionid, $mod, $idnumber, $fristprobe, $fristersatz);
             break;
         case 'assign':
-            tool_sebprep_copy_assign($targetcourseid, $targetsectionid, $mod);
+            $cmid = tool_sebprep_copy_assign($targetcourseid, $targetsectionid, $mod);
             break;
         default:
             debugging("tool_sebprep: Modultyp '{$mod['modname']}' wird übersprungen.", DEBUG_DEVELOPER);
+            return;
     }
+    if ($cmid) {
+        tool_sebprep_fire_module_created_event($cmid, $mod['modname']);
+    }
+}
+
+/**
+ * Fires \core\event\course_module_created so that Moodle subsystems
+ * (notably completion) initialise tracking state for the new activity.
+ * Without this event, completion checkboxes are not rendered for users.
+ */
+function tool_sebprep_fire_module_created_event(int $cmid, string $modname): void {
+    $cm = get_coursemodule_from_id($modname, $cmid, 0, false, MUST_EXIST);
+    $modcontext = context_module::instance($cmid);
+    $event = \core\event\course_module_created::create_from_cm($cm, $modcontext);
+    $event->trigger();
 }
 
 // ── Resource (PDF) kopieren ──────────────────────────────────────────────────
