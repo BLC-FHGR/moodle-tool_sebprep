@@ -137,8 +137,11 @@ function tool_sebprep_process_step1(
     $fristprobeformatted  = tool_sebprep_format_date($fristprobe,  $language);
     $fristersatzformatted = tool_sebprep_format_date($fristersatz, $language);
 
-    // 1. Abschlussverfolgung einschalten
-    $DB->set_field('course', 'enablecompletion', 1, ['id' => $courseid]);
+    // 1. Abschlussverfolgung einschalten + Abschlussbedingungen anzeigen
+    // (showcompletionconditions steuert, ob das "Abschluss"-Dropdown im
+    //  Bearbeitungsmodus neben automatischen Aktivitäten erscheint).
+    $DB->set_field('course', 'enablecompletion',         1, ['id' => $courseid]);
+    $DB->set_field('course', 'showcompletionconditions', 1, ['id' => $courseid]);
 
     // 2. Templatekurs lesen (DE: Abschnitt 1, EN: Abschnitt 2)
     $template = tool_sebprep_read_template($templatecourseid, $sectionnumber);
