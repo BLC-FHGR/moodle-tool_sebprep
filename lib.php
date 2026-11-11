@@ -391,6 +391,9 @@ function tool_sebprep_copy_module(
         case 'assign':
             $cmid = tool_sebprep_copy_assign($targetcourseid, $targetsectionid, $mod);
             break;
+        case 'openbook':
+            $cmid = tool_sebprep_copy_openbook($targetcourseid, $targetsectionid, $mod);
+            break;
         default:
             debugging("tool_sebprep: Modultyp '{$mod['modname']}' wird übersprungen.", DEBUG_DEVELOPER);
             return;
@@ -566,6 +569,59 @@ function tool_sebprep_copy_assign(
     }
 
     tool_sebprep_append_to_section_sequence($targetsectionid, $cmid);
+    return $cmid;
+}
+
+// ── Openbook (mod_openbook) kopieren ─────────────────────────────────────────
+// Nur Einstellungen; Dateien/Overrides sind Benutzerdaten und werden nicht kopiert.
+
+function tool_sebprep_copy_openbook(
+    int $targetcourseid,
+    int $targetsectionid,
+    array $mod
+): ?int {
+    global $DB, $CFG;
+
+    $moduleid = $DB->get_field('modules', 'id', ['name' => 'openbook'], IGNORE_MISSING);
+    if (!$moduleid || !file_exists($CFG->dirroot . '/mod/openbook/locallib.php')) {
+        debugging("tool_sebprep: mod_openbook ist nicht installiert, Aktivität wird übersprungen.", DEBUG_DEVELOPER);
+        return null;
+    }
+
+    $srcopenbook = $DB->get_record('openbook', ['id' => $mod['instance']], '*', MUST_EXIST);
+
+    $cm   = tool_sebprep_build_cm($targetcourseid, $moduleid, $targetsectionid, $mod);
+    $cmid = $DB->insert_record('course_modules', $cm);
+
+    // Nur existierende Spalten kopieren
+    $cols = array_keys($DB->get_columns('openbook'));
+    $newopenbook = new stdClass();
+    foreach ($cols as $col) {
+        if ($col === 'id') continue;
+        if (isset($srcopenbook->$col)) {
+            $newopenbook->$col = $srcopenbook->$col;
+        }
+    }
+    $newopenbook->course       = $targetcourseid;
+    $newopenbook->timecreated  = time();
+    $newopenbook->timemodified = time();
+    $openbookid = $DB->insert_record('openbook', $newopenbook);
+    $DB->set_field('course_modules', 'instance', $openbookid, ['id' => $cmid]);
+
+    tool_sebprep_append_to_section_sequence($targetsectionid, $cmid);
+
+    // Kalendereinträge wie openbook_add_instance() anlegen
+    try {
+        require_once($CFG->dirroot . '/mod/openbook/locallib.php');
+        $course   = get_course($targetcourseid);
+        $cmrecord = get_coursemodule_from_id('openbook', $cmid, 0, false, MUST_EXIST);
+        $instance = new openbook($cmrecord, $course, context_module::instance($cmid));
+        $instance->update_calendar_event();
+    } catch (\Throwable $e) {
+        debugging('tool_sebprep: Openbook-Kalendereinträge konnten nicht erstellt werden: ' .
+            $e->getMessage(), DEBUG_DEVELOPER);
+    }
+
     return $cmid;
 }
 

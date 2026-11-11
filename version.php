@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_sebprep';       // Full name of the plugin (used for diagnostics).
-$plugin->version   = 2026051902;            // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2026111100;            // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2026021600;            // Requires this Moodle version (5.0.6).
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.2';              // User-friendly version number.
+$plugin->release   = '1.0.3';              // User-friendly version number.
